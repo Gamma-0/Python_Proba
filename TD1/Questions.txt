@@ -1,6 +1,0 @@
-2) Vous devriez obtenir une image composée uniquement de deux couleurs à la fin de cette étape, pouvez vous expliquer pourquoi ?
-
-4) En passant sensor_right à 1 dans l’exemple fournit, , le robot ne se trouve nul part à la fin.
-En effet, si l'on regarde ses déplacements et mesures par rapport à la grille, on voit qu'en prenant en compte la probabilité qu'il ne se déplace pas, en se déplacant sur la grille, les couleurs mesurées forment un chemin qui n'existe pas sur la grille.
-De ce fait, si l'on considère que le robot peut se tromper en mesurant les couleurs, un chemin peut être trouvé. Dans le cas contraire, si l'on admet que le robot ne peut pas se tromper, les couleurs mesurées forment un chemin qui n'existent pas.
-Comme le chemin n'existe pas et que le robot ne s'est pas trompé, alors il est nul part dans la grille.
