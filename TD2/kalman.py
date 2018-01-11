@@ -19,15 +19,16 @@ P =  np.matrix([[5.,0.,0.,0.],
              [0.,0.,100.,0.],
              [0.,0.,0.,100.]])
 
+# Modification 1
 # next state function
-F=  np.matrix([[0.,0.,0.,0.],
-             [0.,0.,0.,0.],
-             [0.,0.,0.,0.],
-             [0.,0.,0.,0.]])
+F=  np.matrix([[1.,0.,dt,0.],
+             [0.,1.,0.,dt],
+             [0.,0.,1.,0.],
+             [0.,0.,0.,1.]])
 
- # measurement function
-H =  np.matrix([[0.,0.,0.,0.],
-             [0.,0.,0.,0.]])
+# measurement function
+H =  np.matrix([[1.,0.,0.,0.],
+             [0.,1.,0.,0.]])
 
 # measurement uncertainty
 Q =  np.matrix([[1.,0.],
@@ -63,24 +64,20 @@ def bin_matrix(x,P):
 
 # compute position (new_x) and uncertainty (new_P) after movement
 def move(x, P):
-    new_x = x
-    new_P = P
-    # TODO
-    """new_x = F * x + move???
-    new_P = F *  P * np.transpose(F) + R"""
+    # Modification 2
+    new_x = F * x + u
+    new_P = F *  P * np.transpose(F) + R
     return (new_x,new_P)
 
 
 # compute position (new_x) and uncertainty (new_P) after sensing.
 # Z: measurements
 def sense(x,P,Z):
-    new_x =x
-    new_P=P
-    # TODO
+    # Modification 3
     Y = Z - (H*x);
     S = H * P * np.transpose(H) + Q
     K = P * np.transpose(H) * np.linalg.inv(S)
-    new_x = x * (K * y???)
+    new_x = x + (K * Y)
     new_P = (I - (K * H)) * P;
     return (new_x,new_P)
 
@@ -139,15 +136,16 @@ u = np.matrix([[0], [0], [0.], [0.]])
 measurements = [[5.5, 10.], [6.5, 8.3], [7., 5.4], [6.5, 4.2], [9.3, 1.5], [10, 0.5]]
 initial_xy = [4., 11.]
 final_position = np.array([10.,0.,10.,-20.])
-#handle_test_case(measurements,initial_xy,final_position)
+handle_test_case(measurements,initial_xy,final_position)
 
 
 ##############################################################
 print "Test case 3 (4-dimensional example, errors and robot acceleration)"
 #u : [x,y,vx,vy]
-u = np.matrix([[0], [0], [0.], [0.]])
+# Modification 5
+u = np.matrix([[0], [0], [10.], [-5.]])
 measurements = [[5., 11.], [4., 12.5], [4., 13.5], [5., 14.], [7., 14.], [10., 13.5]]
 initial_xy = [7., 9.]
 final_position = np.array([10,13.5,40.,-10.])
 
-#handle_test_case(measurements,initial_xy,final_position)
+handle_test_case(measurements,initial_xy,final_position)
