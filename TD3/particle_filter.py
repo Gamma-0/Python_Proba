@@ -19,7 +19,7 @@ turn_noise = 0.2 # noise in the particle rotation
 distance_noise = 3.0 # noise in the particle distance of deplacement
 
 particle_number = 500 # have a guess !
-world_size = 50.0 # world is a square of world_size*world_size, and is cyclic
+world_size = 50 # world is a square of world_size*world_size, and is cyclic
 landmarks  = [[0.0, world_size-1], [0.0, 0.0], [world_size-1, 0.0], [world_size-1, world_size-1]] # position of 4 landmarks in (y, x) format
 
 #landmark_number = 4
@@ -85,11 +85,10 @@ class particle:
         new_y = 0.0
 
         #TODO question 2
-        new_x = self.x + (self.x+motion[1])* cos(self.orientation*180/pi) - (self.y+motion[1])* sin(self.orientation*180/pi);
-        new_x = new_x % world_size;
-        new_y = self.y + (self.y+motion[1])* sin(self.orientation*180/pi) + (self.y+motion[1])* cos(self.orientation*180/pi);
-        new_y = new_y % world_size;
-        new_orientation = self.orientation + motion[0]
+        new_orientation = (self.orientation + np.random.normal(motion[0],self.turn_noise)) % (2*pi)
+        dist = np.random.normal(motion[1] , self.distance_noise)
+        new_x = (self.x + dist*cos(new_orientation)) % world_size
+        new_y = (self.y + dist*sin(new_orientation)) % world_size
 
         result = particle()
         result.measure_noise  = self.measure_noise
@@ -107,8 +106,15 @@ class particle:
             lx = l[1]
             ly = l[0]
             #TODO question 3
-            a = atan2(ly-self.y, lx-self.x)
-            Z.append((a-self.orientation+self.measure_noise)%2*pi)
+            pos = np.array([self.x, self.y])
+            direction = l - pos
+            n = np.linalg.norm(direction) #  normaliser vecteur
+            if n!=0:
+                direction = direction/n
+            angle = acos(np.dot(direction, [cos(self.orientation), sin(self.orientation)])) # angle entre orientation du robot et celle du marqueur
+            if self.measure_noise != 0:
+                angle = (np.random.normal(angle,self.measure_noise)) % (2*pi)
+            Z.append(angle)
         return Z
 
 
@@ -127,6 +133,7 @@ def get_position(p):
         orientation += i.orientation # WARNING !!! orientation cyclic (how to do ?)
     x /= len(p)
     y /= len(p)
+    orientation /= len(p)
 
     return [x, y , orientation]
 
@@ -147,7 +154,7 @@ def get_map(p):
     pict = np.zeros((world_size,world_size))
     N = len(p)
     for i in range(N):
-        pict[floor(p[i].x),floor(p[i].y)] += 1.0/N
+        pict[int(floor(p[i].x)),int(floor(p[i].y))] += 1.0/N
     return pict
 
 # resamples particules
@@ -156,7 +163,6 @@ def resample(p,w):
     N = len(p)
     new_p = []
     #TODO question 4
-
     index = int(random.random() * N)
     beta = 0.0
     mw = max(w)
@@ -166,7 +172,6 @@ def resample(p,w):
             beta -= w[index]
             index = (index + 1) % N
         new_p.append(p[index])
-    #
     return new_p
 
 
@@ -226,7 +231,7 @@ def particle_filter(motions, measurements, particle_number):
         im = plt.imshow(pict)
         plt.pause(0.1)
         #display robot position
-        pict[floor(result[0]),floor(result[1])] =500
+        pict[int(floor(result[0])),int(floor(result[1]))] =500
         im = plt.imshow(pict)
         plt.pause(0.1)
 
@@ -238,6 +243,12 @@ def particle_filter(motions, measurements, particle_number):
 print "Test case 1 (varying rotation, constant motion, four landmarks)"
 
 number_of_iterations = 10
+
+#TODO question 6 (decommenter pour tester differentes valeurs)
+#landmark_number = 10
+#landmarks = generate_landmark(landmark_number)
+#particle_number = 10
+#number_of_iterations = 5
 
 #first element is rotation command, second is movement's distance
 motions = [[random.random() * pi/4, 5] for row in range(number_of_iterations)]

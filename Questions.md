@@ -1,4 +1,4 @@
-# Réponse aux TD
+# Réponses aux TDs
 ## TD1
 ### 2. Image composée uniquement de deux couleurs, pourquoi ?
 Le déplacement du robot suit une loi de Bernouilli, soit il se déplace, soit il ne se déplace pas. Ainsi, lors du premier déplacement, on passe d'une distribution uniforme à une matrice contenant deux probabilités : une pour la zone où il ne peut pas se déplacer et une autre pour la zone où il peut se déplacer (où il a également plus de chance de s'y trouver).
